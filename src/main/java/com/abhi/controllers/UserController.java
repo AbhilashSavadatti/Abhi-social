@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -24,21 +25,10 @@ public class UserController {
 	@Autowired
 	UserService userService;
 	
-	
-	
-	@PostMapping("/users")
-	public User createUser(@RequestBody User user) {
-		
-		
-		User savedUser = userService.registerUser(user);
-		
-		return savedUser;
-	}
-	
-	
 
 	
-	@GetMapping("/users")
+	
+	@GetMapping("/api/users")
 	public List<User> getUsers(){
 		
 		
@@ -51,7 +41,7 @@ public class UserController {
 		
 	}
 	
-@GetMapping("/users/{userId}")
+@GetMapping("/api/users/{userId}")
 public User getUsersById(@PathVariable("userId") Integer id) throws Exception{
 	
 	User user = userService.findUserById(id);
@@ -63,17 +53,22 @@ public User getUsersById(@PathVariable("userId") Integer id) throws Exception{
 
 
 
-@PutMapping("/users/{userId}")
-public User updateUser(@RequestBody User user, @PathVariable Integer userId) throws Exception {
-	User updatedUser = userService.updateUser(user, userId);
+@PutMapping("/api/users")
+public User updateUser(@RequestBody User user,@RequestHeader("Authorization")String jwt ) throws Exception {
+	
+	User reqUser = userService.findUserByJwt(jwt);
+	
+	User updatedUser = userService.updateUser(user, reqUser.getId());
 	
 	return updatedUser;
 }
 
-@PutMapping("/users/follow/{userId1}/{userId2}")
-public User followUserHandler(@PathVariable Integer userId1, @PathVariable Integer userId2) throws Exception {
+@PutMapping("/api/users/follow/{userId2}")
+public User followUserHandler(@RequestHeader("Authorization")String jwt, @PathVariable Integer userId2) throws Exception {
 	
-	User user = userService.followUser(userId1, userId2);
+	User reqUser = userService.findUserByJwt(jwt);
+	
+	User user = userService.followUser(reqUser.getId(), userId2);
 	
 	
 		
@@ -81,15 +76,32 @@ public User followUserHandler(@PathVariable Integer userId1, @PathVariable Integ
 }
 
 
-@GetMapping("/users/search")
+@GetMapping("/api/users/search")
 public List<User> searchUser(@RequestParam("query") String query){
 	
 	
-	List<User>  users = userService.searchUser(query) ;
-	return users;
+	List<User>  user = userService.searchUser(query) ;
+	return user;
 	
 	
 }
+
+
+@GetMapping("/api/users/profile")
+public User getUserFromToken(@RequestHeader("Authorization")String jwt ) {
+	
+	User user = userService.findUserByJwt(jwt);
+	
+	user.setPassword(null);
+
+	return user;
+	
+	
+	
+}
+
+
+
 
 
 }

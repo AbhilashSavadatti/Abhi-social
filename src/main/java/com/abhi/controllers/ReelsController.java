@@ -3,32 +3,68 @@ package com.abhi.controllers;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.abhi.models.Reels;
+import com.abhi.models.User;
+import com.abhi.service.ReelsService;
+import com.abhi.service.UserService;
 
 @RestController
 public class ReelsController {
 	
+	@Autowired
+	private ReelsService reelsService;
 	
-
+	@Autowired
+	private UserService userService;
+	
+	
+	@PostMapping("/api/reels")
+	public Reels createReels(@RequestBody Reels reel,@RequestHeader("Authorization") String jwt) {
 		
-		@GetMapping("/reels")
-		public List<Reels> getReels(){
-			
-			List<Reels> reels = new ArrayList<>();
-			
-			
-			Reels reel1= new Reels("1 reel");
-			Reels reel2 = new Reels("2 reel");
-			
-			reels.add(reel1);
-			reels.add(reel2);
-			
-			return reels;
-		}
+		
+		User reqUser = userService.findUserByJwt(jwt);
+		Reels createdReels = reelsService.createReel(reel, reqUser);
+		
+		
+		return createdReels;
 		
 	}
+	
+	
+	@GetMapping("/api/reels")
+	public List<Reels> findAllReels() {
+		
+	
+		List<Reels> reels = reelsService.findAllReels();
+		
+		
+		return reels;
+		
+	}
+
+	
+	
+	@GetMapping("/api/reels/user/{userId}")
+	public List<Reels> findAllReels(@PathVariable Integer userId) throws Exception {
+		
+	
+		List<Reels> reels = reelsService.findUsersReel(userId);
+		
+		
+		return reels;
+		
+	}
+	
+		}
+		
+	
 
 

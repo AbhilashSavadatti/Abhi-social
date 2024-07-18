@@ -6,6 +6,7 @@ import java.util.Optional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
+import com.abhi.config.JwtProvider;
 import com.abhi.models.User;
 import com.abhi.repository.UserRepository;
 
@@ -17,26 +18,7 @@ public class UserServiceImplementation implements UserService{
 	
 	
 	
-	@Override
-	public User registerUser(User user) {
-		// TODO Auto-generated method stub
-        User newUser = new User();
-		
-		
-		newUser.setFirstName(user.getFirstName());
-		newUser.setLastName(user.getLastName());
-		newUser.setEmail(user.getEmail());
-		newUser.setPassword(user.getPassword());
-		newUser.setId(user.getId());
-		
-		
-		User savedUser = userRepository.save(newUser);
-		
-		return savedUser;
-		
-
-	}
-
+	
 	@Override
 	public User findUserById(Integer userId) throws Exception {
 		// TODO Auto-generated method stub
@@ -58,21 +40,21 @@ public class UserServiceImplementation implements UserService{
 	}
 
 	@Override
-	public User followUser(Integer userId1, Integer userId2) throws Exception {
+	public User followUser(Integer reqUserId, Integer userId2) throws Exception {
 		// TODO Auto-generated method stub
 		
 		
-		User user1 = findUserById(userId1);
+		User  reqUser = findUserById(reqUserId);
 		User user2 = findUserById(userId2);
 		
-		user2.getFollowers().add(user1.getId());
-		user1.getFollowings().add(user2.getId());
+		user2.getFollowers().add( reqUser.getId());
+		reqUser.getFollowings().add(user2.getId());
 		
-		userRepository.save(user1);
+		userRepository.save(reqUser);
 		userRepository.save(user2);
 		
 		
-		return user1;
+		return reqUser;
 	}
 
 	@Override
@@ -105,6 +87,9 @@ public class UserServiceImplementation implements UserService{
 			oldUser.setEmail(user.getEmail());
 			
 		}
+	
+	if(user.getGender()!=null)
+		oldUser.setGender(user.getGender());
 		
 	User UpdatedUser = userRepository.save(oldUser);
 
@@ -116,6 +101,21 @@ public class UserServiceImplementation implements UserService{
 		
 		
 		return userRepository.searchUser(query);
+	}
+
+	@Override
+	public User registerUser(User user) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public User findUserByJwt(String jwt) {
+		
+		String email = JwtProvider.getEmailFromJwtToken(jwt);
+		User user = userRepository.findByEmail(email);
+		
+		return user;
 	}
 
 }

@@ -4,10 +4,14 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.OneToMany;
 
 @Entity
 public class Post {
@@ -21,8 +25,11 @@ public class Post {
 	
 	private String video;
 	
+	
+	@ManyToOne
 	private User user;
 	
+	@OneToMany
 	private List<User> liked = new ArrayList<>();
 	
 	
@@ -30,14 +37,22 @@ public class Post {
 	
 	private LocalDateTime createdAt;
 	
+	@OneToMany
+	private List<Comment> comments = new ArrayList<>();
+	
+	
 	
 	public Post(){}
 
 
 	
 
+	
+
+
+
 	public Post(Integer id, String caption, String image, String video, User user, List<User> liked,
-			LocalDateTime createdAt) {
+			LocalDateTime createdAt, List<Comment> comments) {
 		super();
 		this.id = id;
 		this.caption = caption;
@@ -46,8 +61,24 @@ public class Post {
 		this.user = user;
 		this.liked = liked;
 		this.createdAt = createdAt;
+		this.comments = comments;
 	}
 
+
+
+
+
+
+
+
+	public List<Comment> getComments() {
+		return comments;
+	}
+
+
+	public void setComments(List<Comment> comments) {
+		this.comments = comments;
+	}
 
 
 

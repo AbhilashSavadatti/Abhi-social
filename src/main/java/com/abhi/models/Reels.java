@@ -1,30 +1,31 @@
 package com.abhi.models;
 
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.ManyToOne;
+import lombok.AllArgsConstructor;
+import lombok.Getter;
+import lombok.NoArgsConstructor;
+import lombok.Setter;
+
+@Entity
+@Setter
+@Getter
+@NoArgsConstructor
+@AllArgsConstructor
 public class Reels {
-	private String reels;
 	
-	Reels(){
-		
-	}
-
-	public Reels(String reels) {
-		super();
-		this.reels = reels;
-	}
-
-	public String getReels() {
-		return reels;
-	}
-
-	public void setReels(String reels) {
-		this.reels = reels;
-	}
+	@Id
+	@GeneratedValue(strategy  = GenerationType.AUTO)
+	private Integer Id;
 	
+	private String title;
 	
+	private String video;
 	
-	
-	
-	
-	
+	@ManyToOne
+	private User user;
 	
 }
